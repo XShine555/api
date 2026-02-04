@@ -32,7 +32,7 @@ public class UserController {
     @GetMapping("/api/test")
     public ResponseEntity<String> test() {
         logger.info(getClass().getSimpleName(), "test", "Test endpoint called");
-        return ResponseEntity.ok("API is working!");
+        return ResponseEntity.ok("Funciona");
     }
 
     @GetMapping("/users/{id}/image")

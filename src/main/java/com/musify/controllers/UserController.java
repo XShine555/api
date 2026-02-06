@@ -6,18 +6,23 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.musify.logging.CustomLogging;
-import com.musify.models.User;
+import com.musify.DTOs.UserController.UserCreateDTO;
+import com.musify.DTOs.UserController.UserResponseDTO;
+import com.musify.DTOs.UserController.UserUpdateDTO;
 import com.musify.services.UserService;
 
 @RestController
@@ -26,56 +31,67 @@ public class UserController {
     @Autowired
     UserService userService;
 
-    @Autowired
-    CustomLogging logger;
-
-    @GetMapping("/api/test")
-    public ResponseEntity<String> test() {
-        logger.info(getClass().getSimpleName(), "test", "Test endpoint called");
-        return ResponseEntity.ok("Funciona");
-    }
-
-    @GetMapping("/users/{id}/image")
-    public ResponseEntity<String> updateUserImagePath(@PathVariable("id") Long id) {
-        logger.info(getClass().getSimpleName(), "updateUserImagePath", "GET Endpoint called with ID: " + id);
-        return ResponseEntity.ok("Image endpoint called for user " + id);
-    }
-
-    @PostMapping("/users/{id}/image")
-    public ResponseEntity<?> updateUserImage(@PathVariable("id") Long id, @RequestParam("profilePicture") MultipartFile profilePicture) {
-        logger.info(getClass().getSimpleName(), "updateUserImage", "POST endpoint called for user ID: " + id);
-        Optional<User> optionalUser = userService.getUserById(id);
-        if (optionalUser.isEmpty()) {
-            logger.error(getClass().getSimpleName(), "updateUserImage", "User with ID: " + id + " not found.");
-            return ResponseEntity.notFound().build();
+    @PostMapping("/users")
+    public ResponseEntity<UserResponseDTO> createUser(@RequestBody UserCreateDTO userCreateDTO) {
+        if (userService.getUserByUsername(userCreateDTO.getUsername()).isPresent()) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
 
+        UserResponseDTO createdUser = userService.createUser(userCreateDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
+    }
+
+    @GetMapping("/users")
+    public ResponseEntity<List<UserResponseDTO>> getAllUsers() {
+        List<UserResponseDTO> users = userService.getAllUsers();
+        return ResponseEntity.ok(users);
+    }
+
+    @GetMapping("/users/{id}")
+    public ResponseEntity<UserResponseDTO> getUserById(@PathVariable Long id) {
+        Optional<UserResponseDTO> user = userService.getUserById(id);
+        return user.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    }
+
+    @PutMapping("/users/{id}")
+    public ResponseEntity<UserResponseDTO> updateUser(@PathVariable Long id, @RequestBody UserUpdateDTO userUpdateDTO) {
+        Optional<UserResponseDTO> updatedUser = userService.updateUser(id, userUpdateDTO);
+        return updatedUser.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping("/users/{id}")
+    public ResponseEntity<Void> deleteUserById(@PathVariable Long id) {
+        boolean deleted = userService.deleteUserById(id);
+        return deleted ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
+    }
+
+    @DeleteMapping("/users")
+    public ResponseEntity<Void> deleteAllUsers() {
+        userService.deleteAllUsers();
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping(value = "/users/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> updateUserImage(@PathVariable Long id,
+            @RequestParam("profilePicture") MultipartFile profilePicture) {
         try {
-            userService.updateImagePath(optionalUser.get(), profilePicture);
-            logger.info(getClass().getSimpleName(), "updateUserImage", "Successfully updated image path for User ID: " + id);
-            return ResponseEntity.ok().build();
+            boolean updated = userService.updateImagePath(id, profilePicture);
+            return updated ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
         } catch (IOException ioException) {
-            logger.error(getClass().getSimpleName(), "updateUserImage", "Failed to update image path for User ID: " + id + ". Error: " + ioException.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        } catch (Exception e) {
-            logger.error(getClass().getSimpleName(), "updateUserImage", "Unexpected error for User ID: " + id + ". Error: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
-    @PostMapping("/users/upload-csv")
+    @PostMapping(value = "/users/upload-csv", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> uploadUsersFromCsv(@RequestParam("file") MultipartFile csvFile) {
         if (csvFile.isEmpty()) {
-            logger.warn(getClass().getSimpleName(), "uploadUsersFromCsv", "Uploaded CSV file is empty");
             return ResponseEntity.badRequest().body("File is empty");
         }
 
         try {
-            List<User> users = userService.uploadUsersFromCsv(csvFile);
-            logger.info(getClass().getSimpleName(), "uploadUsersFromCsv", "Successfully uploaded " + users.size() + " users from CSV");
+            List<UserResponseDTO> users = userService.uploadUsersFromCsv(csvFile);
             return ResponseEntity.ok("Uploaded " + users.size() + " users");
         } catch (IOException ioException) {
-            logger.error(getClass().getSimpleName(), "uploadUsersFromCsv", "Failed to upload users from CSV. Error: " + ioException.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to process CSV file");
         }
     }

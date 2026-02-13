@@ -81,18 +81,4 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-
-    @PostMapping(value = "/users/upload-csv", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> uploadUsersFromCsv(@RequestParam("file") MultipartFile csvFile) {
-        if (csvFile.isEmpty()) {
-            return ResponseEntity.badRequest().body("File is empty");
-        }
-
-        try {
-            List<UserResponseDTO> users = userService.uploadUsersFromCsv(csvFile);
-            return ResponseEntity.ok("Uploaded " + users.size() + " users");
-        } catch (IOException ioException) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to process CSV file");
-        }
-    }
 }

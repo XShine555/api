@@ -5,17 +5,17 @@ import java.time.LocalDateTime;
 public class UserResponseDTO {
     private Long id;
     private String username;
-    private String imagePath;
+    private String imageUrl;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
     public UserResponseDTO() {
     }
 
-    public UserResponseDTO(Long id, String username, String imagePath, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public UserResponseDTO(Long id, String username, String imageUrl, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.username = username;
-        this.imagePath = imagePath;
+        this.imageUrl = imageUrl;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
@@ -36,12 +36,12 @@ public class UserResponseDTO {
         this.username = username;
     }
 
-    public String getImagePath() {
-        return imagePath;
+    public String getImageUrl() {
+        return imageUrl;
     }
 
-    public void setImagePath(String imagePath) {
-        this.imagePath = imagePath;
+    public void setImagePath(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
     public LocalDateTime getCreatedAt() {

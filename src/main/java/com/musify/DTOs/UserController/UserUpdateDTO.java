@@ -2,14 +2,14 @@ package com.musify.DTOs.UserController;
 
 public class UserUpdateDTO {
     private String username;
-    private String passwordHash;
+    private String password;
 
     public UserUpdateDTO() {
     }
 
-    public UserUpdateDTO(String username, String passwordHash) {
+    public UserUpdateDTO(String username, String password) {
         this.username = username;
-        this.passwordHash = passwordHash;
+        this.password = password;
     }
 
     public String getUsername() {
@@ -20,11 +20,11 @@ public class UserUpdateDTO {
         this.username = username;
     }
 
-    public String getPasswordHash() {
-        return passwordHash;
+    public String getPassword() {
+        return password;
     }
 
-    public void setPasswordHash(String passwordHash) {
-        this.passwordHash = passwordHash;
+    public void setPassword(String password) {
+        this.password = password;
     }
 }

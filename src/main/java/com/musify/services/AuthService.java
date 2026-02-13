@@ -17,8 +17,6 @@ import com.musify.DTOs.Auth.LoginRequestDTO;
 import com.musify.DTOs.Auth.RegisterRequestDTO;
 import com.musify.DTOs.User.UserCreateDTO;
 import com.musify.models.User;
-import com.musify.repositories.UserRepository;
-
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;

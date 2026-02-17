@@ -32,7 +32,6 @@ public class JwtService {
                 .subject(user.getUsername())
                 .claim("imagePath", user.getImagePath())
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(getSigningKey())
                 .compact();
     }

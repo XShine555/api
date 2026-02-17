@@ -45,7 +45,7 @@ public class AuthService {
         this.authenticationManager = authenticationManager;
     }
 
-    public AuthResponseDTO register(RegisterRequestDTO request) {
+    public AuthResponseDTO signIn(RegisterRequestDTO request) {
         logger.info("Registering user: {}", request.username());
         User user = new User();
         user.setUsername(request.username());
@@ -56,7 +56,7 @@ public class AuthService {
         return new AuthResponseDTO(jwtService.generateToken(user));
     }
 
-    public AuthResponseDTO login(LoginRequestDTO request) {
+    public AuthResponseDTO signUp(LoginRequestDTO request) {
         logger.info("Login attempt for user: {}", request.username());
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.username(), request.password()));

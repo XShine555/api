@@ -32,22 +32,22 @@ public class AuthController {
         this.authService = authService;
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<AuthResponseDTO> register(@RequestBody RegisterRequestDTO request) {
+    @PostMapping("/signIn")
+    public ResponseEntity<AuthResponseDTO> signIn(@RequestBody RegisterRequestDTO request) {
         if (userService.getUserByUsername(request.username()).isPresent()) {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(authService.register(request));
+        return ResponseEntity.status(HttpStatus.CREATED).body(authService.signIn(request));
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<AuthResponseDTO> login(@RequestBody LoginRequestDTO request) {
+    @PostMapping("/signUp")
+    public ResponseEntity<AuthResponseDTO> signUp(@RequestBody LoginRequestDTO request) {
         if (userService.getUserByUsername(request.username()).isEmpty()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        return ResponseEntity.ok(authService.login(request));
+        return ResponseEntity.ok(authService.signUp(request));
     }
 
     @GetMapping("/me")

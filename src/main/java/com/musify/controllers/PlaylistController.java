@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -42,8 +44,10 @@ public class PlaylistController {
     }
 
     @PostMapping
-    public ResponseEntity<PlaylistResponseDTO> createPlaylist(@RequestBody PlaylistCreateDTO dto) {
-        Playlist created = playlistService.createPlaylist(dto);
+    public ResponseEntity<PlaylistResponseDTO> createPlaylist(@AuthenticationPrincipal Jwt jwt,
+         @RequestBody PlaylistCreateDTO dto) {
+        Long userId = Long.valueOf(jwt.getSubject());
+        Playlist created = playlistService.createPlaylist(userId, dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(toResponseDTO(created));
     }
 

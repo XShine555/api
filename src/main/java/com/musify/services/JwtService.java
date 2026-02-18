@@ -1,64 +1,69 @@
 package com.musify.services;
 
-import java.util.Date;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 
-import javax.crypto.SecretKey;
-
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
+import org.springframework.security.oauth2.jwt.JwsHeader;
+import org.springframework.security.oauth2.jwt.JwtClaimsSet;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtEncoder;
+import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.stereotype.Service;
 
 import com.musify.models.User;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
-
 @Service
 public class JwtService {
 
-    @Value("${jwt.secret}")
-    private String secret;
+    private final JwtEncoder jwtEncoder;
+    private final JwtDecoder jwtDecoder;
 
     @Value("${jwt.expiration}")
-    private long expiration;
+    private long expirationMs;
 
-    private SecretKey getSigningKey() {
-        return Keys.hmacShaKeyFor(secret.getBytes());
+    public JwtService(JwtEncoder jwtEncoder, JwtDecoder jwtDecoder) {
+        this.jwtEncoder = jwtEncoder;
+        this.jwtDecoder = jwtDecoder;
     }
 
     public String generateToken(User user) {
-        return Jwts.builder()
-                .subject(user.getUsername())
-                .claim("imagePath", user.getImagePath())
-                .issuedAt(new Date())
-                .signWith(getSigningKey())
-                .compact();
+        Instant now = Instant.now();
+        Instant expiresAt = now.plus(expirationMs, ChronoUnit.MILLIS);
+
+        JwtClaimsSet claims = JwtClaimsSet.builder()
+                .issuedAt(now)
+                .expiresAt(expiresAt)
+                .subject(user.getId().toString())
+                .claim("username", user.getUsername())
+                .claim("imagePath", StringUtils.isBlank(user.getImagePath()) ? "" : user.getImagePath())
+                .build();
+
+        JwsHeader jwsHeader = JwsHeader.with(MacAlgorithm.HS256).build();
+        return jwtEncoder.encode(JwtEncoderParameters.from(jwsHeader, claims)).getTokenValue();
     }
 
     public String extractUsername(String token) {
-        return extractAllClaims(token).getSubject();
+        return jwtDecoder.decode(token).getClaimAsString("username");
     }
 
     public String extractImagePath(String token) {
-        return extractAllClaims(token).get("imagePath", String.class);
+        String imagePath = jwtDecoder.decode(token).getClaimAsString("imagePath");
+        return imagePath != null ? imagePath : "";
+    }
+
+    public Long extractUserId(String token) {
+        return Long.parseLong(jwtDecoder.decode(token).getSubject());
     }
 
     public boolean isTokenValid(String token, User user) {
-        String username = extractUsername(token);
-        return username.equals(user.getUsername());
-    }
-
-    public boolean isTokenValid(String token, UserDetails userDetails) {
-        String username = extractUsername(token);
-        return username.equals(userDetails.getUsername());
-    }
-
-    private Claims extractAllClaims(String token) {
-        return Jwts.parser()
-                .verifyWith(getSigningKey())
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
+        try {
+            String userId = jwtDecoder.decode(token).getSubject();
+            return userId.equals(user.getId().toString());
+        } catch (Exception e) {
+            return false;
+        }
     }
 }

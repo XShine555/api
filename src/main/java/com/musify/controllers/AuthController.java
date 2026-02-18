@@ -27,12 +27,9 @@ public class AuthController {
 
     private final UserService userService;
     private final AuthService authService;
-    private final JwtService jwtService;
-
     public AuthController(UserService userService, AuthService authService, JwtService jwtService) {
         this.userService = userService;
         this.authService = authService;
-        this.jwtService = jwtService;
     }
 
     @PostMapping("/signIn")

@@ -38,7 +38,7 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(authService.signIn(request));
+        return ResponseEntity.status(HttpStatus.CREATED).body(authService.signUp(request));
     }
 
     @PostMapping("/signUp")
@@ -47,7 +47,7 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        return ResponseEntity.ok(authService.signUp(request));
+        return ResponseEntity.ok(authService.signIn(request));
     }
 
     @GetMapping("/me")

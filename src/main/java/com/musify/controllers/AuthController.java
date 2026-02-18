@@ -32,8 +32,8 @@ public class AuthController {
         this.authService = authService;
     }
 
-    @PostMapping("/signIn")
-    public ResponseEntity<AuthResponseDTO> signIn(@RequestBody RegisterRequestDTO request) {
+    @PostMapping("/signUp")
+    public ResponseEntity<AuthResponseDTO> signUp(@RequestBody RegisterRequestDTO request) {
         if (userService.getUserByUsername(request.username()).isPresent()) {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
@@ -41,8 +41,8 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.CREATED).body(authService.signUp(request));
     }
 
-    @PostMapping("/signUp")
-    public ResponseEntity<AuthResponseDTO> signUp(@RequestBody LoginRequestDTO request) {
+    @PostMapping("/signIn")
+    public ResponseEntity<AuthResponseDTO> signIn(@RequestBody LoginRequestDTO request) {
         if (userService.getUserByUsername(request.username()).isEmpty()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }

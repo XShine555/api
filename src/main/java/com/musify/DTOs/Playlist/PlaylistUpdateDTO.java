@@ -1,4 +1,6 @@
 package com.musify.DTOs.Playlist;
 
-public record PlaylistUpdateDTO(String name, String imagePath) {
+import org.springframework.web.multipart.MultipartFile;
+
+public record PlaylistUpdateDTO(String title, MultipartFile image) {
 }

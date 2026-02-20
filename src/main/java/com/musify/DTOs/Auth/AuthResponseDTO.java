@@ -1,4 +1,4 @@
 package com.musify.DTOs.Auth;
 
-public record AuthResponseDTO(String token) {
+public record AuthResponseDTO(String accessToken) {
 }

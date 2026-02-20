@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.musify.DTOs.Playlist.PlaylistCreateDTO;
 import com.musify.DTOs.Playlist.PlaylistResponseDTO;
 import com.musify.DTOs.Playlist.PlaylistUpdateDTO;
 import com.musify.models.Playlist;
@@ -44,10 +43,9 @@ public class PlaylistController {
     }
 
     @PostMapping
-    public ResponseEntity<PlaylistResponseDTO> createPlaylist(@AuthenticationPrincipal Jwt jwt,
-         @RequestBody PlaylistCreateDTO dto) {
+    public ResponseEntity<PlaylistResponseDTO> createPlaylist(@AuthenticationPrincipal Jwt jwt) {
         Long userId = Long.valueOf(jwt.getSubject());
-        Playlist created = playlistService.createPlaylist(userId, dto);
+        Playlist created = playlistService.createPlaylist(userId);
         return ResponseEntity.status(HttpStatus.CREATED).body(toResponseDTO(created));
     }
 

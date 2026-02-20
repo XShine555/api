@@ -24,12 +24,12 @@ public class PlaylistService {
         this.playlistRepository = playlistRepository;
     }
 
-    public Playlist createPlaylist(Long id, PlaylistCreateDTO dto) throws NotFoundException {
+    public Playlist createPlaylist(Long id) throws NotFoundException {
         userService.getUserById(id).orElseThrow(() -> new NotFoundException("User not found"));
 
         Playlist playlist = new Playlist();
         playlist.setUserId(id);
-        playlist.setName(dto.name());
+        playlist.setName("New Playlist");
         return playlistRepository.save(playlist);
     }
 

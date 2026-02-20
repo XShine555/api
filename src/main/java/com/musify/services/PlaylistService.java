@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import com.musify.DTOs.Playlist.PlaylistUpdateDTO;
 import com.musify.exceptions.NotFoundException;
 import com.musify.models.Playlist;
+import com.musify.models.User;
 import com.musify.repositories.PlaylistRepository;
 
 import io.micrometer.common.util.StringUtils;
@@ -29,10 +30,10 @@ public class PlaylistService {
     }
 
     public Playlist createPlaylist(Long id) throws NotFoundException {
-        userService.getUserById(id).orElseThrow(() -> new NotFoundException("User not found"));
+        User user = userService.getUserById(id).orElseThrow(() -> new NotFoundException("User not found"));
 
         Playlist playlist = new Playlist();
-        playlist.setUserId(id);
+        playlist.setUser(user);
         playlist.setTitle("New Playlist");
         return playlistRepository.save(playlist);
     }

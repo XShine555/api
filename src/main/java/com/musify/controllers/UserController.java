@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.musify.DTOs.User.UserCreateDTO;
 import com.musify.DTOs.User.UserResponseDTO;
@@ -35,9 +36,18 @@ public class UserController {
     }
 
     private UserResponseDTO toResponseDTO(User user) {
+        String imageUrl = ServletUriComponentsBuilder
+            .fromCurrentContextPath()
+            .path("/images/")
+            .path(user.getImagePath())
+            .toUriString();
+
         return new UserResponseDTO(
-                user.getId(), user.getUsername(), user.getImagePath(),
-                user.getCreatedAt(), user.getUpdatedAt());
+                user.getId(), 
+                user.getUsername(), 
+                imageUrl,
+                user.getCreatedAt(), 
+                user.getUpdatedAt());
     }
 
     @PostMapping

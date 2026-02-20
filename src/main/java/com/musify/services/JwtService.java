@@ -1,9 +1,6 @@
 package com.musify.services;
 
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.JwsHeader;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;

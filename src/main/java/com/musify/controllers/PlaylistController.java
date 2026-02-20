@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.musify.DTOs.Playlist.PlaylistResponseDTO;
 import com.musify.DTOs.Playlist.PlaylistUpdateDTO;
@@ -36,10 +37,16 @@ public class PlaylistController {
     }
 
     private PlaylistResponseDTO toResponseDTO(Playlist playlist) {
+        String imageUrl = ServletUriComponentsBuilder
+            .fromCurrentContextPath()
+            .path("/images/")
+            .path(playlist.getImagePath())
+            .toUriString();
+
         return new PlaylistResponseDTO(
                 playlist.getId(),
                 playlist.getTitle(),
-                playlist.getImagePath(),
+                imageUrl,
                 playlist.getCreatedAt(),
                 playlist.getUpdatedAt());
     }

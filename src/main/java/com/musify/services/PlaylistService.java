@@ -18,7 +18,7 @@ import io.micrometer.common.util.StringUtils;
 
 @Service
 public class PlaylistService {
-    private static final Path PLAYLIST_IMAGE_DIR = Path.of("uploads/playlists_images");
+    private static final Path PLAYLIST_IMAGE_DIR = Path.of("private/images/playlists");
 
     private final UserService userService;
     private final PlaylistRepository playlistRepository;

@@ -60,9 +60,9 @@ public class PlaylistController {
 
     @GetMapping
     public ResponseEntity<List<PlaylistResponseDTO>> getAllPlaylists(
-            @RequestParam(value = "name", required = false) String name) {
-        List<Playlist> playlists = StringUtils.isNotBlank(name)
-                ? playlistService.searchByName(name)
+            @RequestParam(value = "title", required = false) String title) {
+        List<Playlist> playlists = StringUtils.isNotBlank(title)
+                ? playlistService.searchByTitle(title)
                 : playlistService.getAllPlaylists();
         return ResponseEntity.ok(playlists.stream().map(this::toResponseDTO).toList());
     }

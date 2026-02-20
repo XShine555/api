@@ -45,8 +45,8 @@ public class PlaylistService {
         return playlistRepository.findById(id);
     }
 
-    public List<Playlist> searchByName(String name) {
-        return playlistRepository.findByNameContainingIgnoreCase(name);
+    public List<Playlist> searchByTitle(String title) {
+        return playlistRepository.findByTitleContainingIgnoreCase(title);
     }
 
     public Optional<Playlist> updatePlaylist(Long id, PlaylistUpdateDTO dto) throws IOException, IllegalStateException {

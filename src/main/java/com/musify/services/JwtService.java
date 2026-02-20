@@ -3,7 +3,6 @@ package com.musify.services;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.JwsHeader;
@@ -21,9 +20,6 @@ public class JwtService {
     private final JwtEncoder jwtEncoder;
     private final JwtDecoder jwtDecoder;
 
-    @Value("${jwt.expiration}")
-    private long expirationMs;
-
     public JwtService(JwtEncoder jwtEncoder, JwtDecoder jwtDecoder) {
         this.jwtEncoder = jwtEncoder;
         this.jwtDecoder = jwtDecoder;
@@ -31,11 +27,9 @@ public class JwtService {
 
     public String generateToken(User user) {
         Instant now = Instant.now();
-        Instant expiresAt = now.plus(expirationMs, ChronoUnit.MILLIS);
 
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuedAt(now)
-                .expiresAt(expiresAt)
                 .subject(user.getId().toString())
                 .claim("username", user.getUsername())
                 .build();

@@ -9,5 +9,5 @@ import com.musify.models.Playlist;
 
 @Repository
 public interface PlaylistRepository extends JpaRepository<Playlist, Long> {
-    List<Playlist> findByNameContainingIgnoreCase(String name);
+    List<Playlist> findByTitleContainingIgnoreCase(String title);
 }

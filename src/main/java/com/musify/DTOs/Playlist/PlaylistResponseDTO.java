@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 
 public record PlaylistResponseDTO(
         Long id,
-        String name,
+        String title,
         String imageUrl,
         LocalDateTime createdAt,
         LocalDateTime updatedAt) {

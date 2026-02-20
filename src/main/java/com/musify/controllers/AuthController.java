@@ -20,7 +20,7 @@ import com.musify.services.JwtService;
 import com.musify.services.UserService;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/auth")
 public class AuthController {
     private final UserService userService;
     private final AuthService authService;

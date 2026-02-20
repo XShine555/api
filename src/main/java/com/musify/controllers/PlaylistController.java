@@ -27,7 +27,7 @@ import com.musify.services.PlaylistService;
 import io.micrometer.common.util.StringUtils;
 
 @RestController
-@RequestMapping("/api/playlists")
+@RequestMapping("/playlists")
 public class PlaylistController {
 
     private final PlaylistService playlistService;

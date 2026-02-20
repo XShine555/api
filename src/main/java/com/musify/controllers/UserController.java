@@ -26,7 +26,7 @@ import com.musify.models.User;
 import com.musify.services.UserService;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/users")
 public class UserController {
 
     private final UserService userService;

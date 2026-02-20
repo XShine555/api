@@ -38,7 +38,6 @@ public class JwtService {
                 .expiresAt(expiresAt)
                 .subject(user.getId().toString())
                 .claim("username", user.getUsername())
-                .claim("imagePath", StringUtils.isBlank(user.getImagePath()) ? "" : user.getImagePath())
                 .build();
 
         JwsHeader jwsHeader = JwsHeader.with(MacAlgorithm.HS256).build();
@@ -47,11 +46,6 @@ public class JwtService {
 
     public String extractUsername(String token) {
         return jwtDecoder.decode(token).getClaimAsString("username");
-    }
-
-    public String extractImagePath(String token) {
-        String imagePath = jwtDecoder.decode(token).getClaimAsString("imagePath");
-        return imagePath != null ? imagePath : "";
     }
 
     public Long extractUserId(String token) {

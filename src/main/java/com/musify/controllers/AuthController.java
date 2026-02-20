@@ -11,22 +11,20 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.musify.DTOs.Auth.AuthResponseDTO;
 import com.musify.DTOs.Auth.LoginRequestDTO;
 import com.musify.DTOs.Auth.RegisterRequestDTO;
+import com.musify.exceptions.InternalServerErrorException;
 import com.musify.services.AuthService;
 import com.musify.services.JwtService;
 import com.musify.services.UserService;
 
-import io.micrometer.common.util.StringUtils;
-
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
-
     private final UserService userService;
     private final AuthService authService;
+
     public AuthController(UserService userService, AuthService authService, JwtService jwtService) {
         this.userService = userService;
         this.authService = authService;
@@ -51,14 +49,15 @@ public class AuthController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<?> getCurrentUser(@AuthenticationPrincipal Jwt jwt) {
+    public ResponseEntity<?> getCurrentUser(@AuthenticationPrincipal Jwt jwt) throws InternalServerErrorException {
         String username = jwt.getClaimAsString("username");
-        String imagePath = jwt.getClaimAsString("imagePath");
+        String imageUrl = userService.getUserByUsername(username)
+                .map(user -> user.getImagePath())
+                .orElseThrow(() -> new InternalServerErrorException("User not found: " + username));
 
         Map<String, String> userInfo = Map.of(
-            "username", username,
-            "imagePath", StringUtils.isNotBlank(imagePath) ? imagePath : ""
-        );
+                "username", username,
+                "imageUrl", imageUrl);
 
         return ResponseEntity.ok(userInfo);
     }

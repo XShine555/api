@@ -18,10 +18,10 @@ public class Playlist {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String name;
+    @Column(name = "title", nullable = false)
+    private String title;
 
-    @Column(name = "image_path")
+    @Column(name = "image_path", nullable = false)
     private String imagePath;
 
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -59,12 +59,12 @@ public class Playlist {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getTitle() {
+        return title;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getImagePath() {

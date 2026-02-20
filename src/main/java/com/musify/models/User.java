@@ -20,6 +20,7 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "users")
 public class User implements UserDetails {
+    private static String DEFAULT_IMAGE_PATH = "private/images/users/default.jpg";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,8 +32,8 @@ public class User implements UserDetails {
     @Column(name = "password_hash", nullable = false)
     private String passwordHash;
 
-    @Column(name = "image_path")
-    private String imagePath;
+    @Column(name = "image_path", nullable = false)
+    private String imagePath = DEFAULT_IMAGE_PATH;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;

@@ -1,5 +1,6 @@
 package com.musify.controllers;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.musify.DTOs.Playlist.PlaylistResponseDTO;
 import com.musify.DTOs.Playlist.PlaylistUpdateDTO;
+import com.musify.exceptions.NotFoundException;
 import com.musify.models.Playlist;
 import com.musify.services.PlaylistService;
 
@@ -36,7 +38,7 @@ public class PlaylistController {
     private PlaylistResponseDTO toResponseDTO(Playlist playlist) {
         return new PlaylistResponseDTO(
                 playlist.getId(),
-                playlist.getName(),
+                playlist.getTitle(),
                 playlist.getImagePath(),
                 playlist.getCreatedAt(),
                 playlist.getUpdatedAt());
@@ -69,10 +71,16 @@ public class PlaylistController {
     @PutMapping("/{id}")
     public ResponseEntity<PlaylistResponseDTO> updatePlaylist(@PathVariable Long id,
             @RequestBody PlaylistUpdateDTO dto) {
-        return playlistService.updatePlaylist(id, dto)
-                .map(this::toResponseDTO)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        try {
+            return playlistService.updatePlaylist(id, dto)
+                    .map(this::toResponseDTO)
+                    .map(ResponseEntity::ok)
+                    .orElse(ResponseEntity.notFound().build());
+        } catch (NotFoundException e) {
+            return ResponseEntity.notFound().build();
+        } catch (IOException | IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @DeleteMapping("/{id}")

@@ -20,7 +20,7 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "users")
 public class User implements UserDetails {
-    private static String DEFAULT_IMAGE_PATH = "private/images/users/default.jpg";
+    private static String DEFAULT_IMAGE_PATH = "public/images/users/default.jpg";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

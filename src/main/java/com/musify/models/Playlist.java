@@ -34,8 +34,8 @@ public class Playlist {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "user_id", nullable = false)
+    @ManyToOne
+    @JoinColumn(name="user_id", nullable=false)
     private User user;
 
     public User getUser() {

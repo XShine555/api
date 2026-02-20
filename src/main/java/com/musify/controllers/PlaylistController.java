@@ -39,7 +39,6 @@ public class PlaylistController {
     private PlaylistResponseDTO toResponseDTO(Playlist playlist) {
         String imageUrl = ServletUriComponentsBuilder
             .fromCurrentContextPath()
-            .path("/images/")
             .path(playlist.getImagePath())
             .toUriString();
 

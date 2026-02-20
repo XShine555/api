@@ -23,7 +23,6 @@ import com.musify.DTOs.Playlist.PlaylistUpdateDTO;
 import com.musify.exceptions.NotFoundException;
 import com.musify.models.Playlist;
 import com.musify.services.PlaylistService;
-
 import io.micrometer.common.util.StringUtils;
 
 @RestController
@@ -39,6 +38,7 @@ public class PlaylistController {
     private PlaylistResponseDTO toResponseDTO(Playlist playlist) {
         String imageUrl = ServletUriComponentsBuilder
             .fromCurrentContextPath()
+            .path("/images/playlists/") 
             .path(playlist.getImagePath())
             .toUriString();
 

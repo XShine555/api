@@ -38,6 +38,7 @@ public class UserController {
     private UserResponseDTO toResponseDTO(User user) {
         String imageUrl = ServletUriComponentsBuilder
             .fromCurrentContextPath()
+            .path("/images/users/")
             .path(user.getImagePath())
             .toUriString();
 

@@ -16,7 +16,7 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "playlists")
 public class Playlist {
-    private static final String DEFAULT_IMAGE_PATH = "public/images/playlists/default.png";
+    private static final String DEFAULT_IMAGE = "default.png";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,7 +26,7 @@ public class Playlist {
     private String title;
 
     @Column(name = "image_path", nullable = false)
-    private String imagePath = DEFAULT_IMAGE_PATH;
+    private String imagePath = DEFAULT_IMAGE;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;

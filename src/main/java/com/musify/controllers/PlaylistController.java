@@ -20,6 +20,9 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.musify.DTOs.Playlist.PlaylistResponseDTO;
 import com.musify.DTOs.Playlist.PlaylistUpdateDTO;
+import com.musify.DTOs.Playlist.PreviewPlaylistResponseDTO;
+import com.musify.DTOs.Track.TrackSummaryDTO;
+import com.musify.DTOs.User.UserSummaryDTO;
 import com.musify.exceptions.NotFoundException;
 import com.musify.models.Playlist;
 import com.musify.services.PlaylistService;
@@ -35,14 +38,14 @@ public class PlaylistController {
         this.playlistService = playlistService;
     }
 
-    private PlaylistResponseDTO toResponseDTO(Playlist playlist) {
+    private PreviewPlaylistResponseDTO toPreviewResponseDTO(Playlist playlist) {
         String imageUrl = ServletUriComponentsBuilder
             .fromCurrentContextPath()
             .path("/images/playlists/") 
             .path(playlist.getImagePath())
             .toUriString();
 
-        return new PlaylistResponseDTO(
+        return new PreviewPlaylistResponseDTO(
                 playlist.getId(),
                 playlist.getTitle(),
                 imageUrl,
@@ -50,20 +53,51 @@ public class PlaylistController {
                 playlist.getUpdatedAt());
     }
 
+    private PlaylistResponseDTO toResponseDTO(Playlist playlist) {
+        String playlistImageUrl = ServletUriComponentsBuilder
+            .fromCurrentContextPath()
+            .path("/images/playlists/") 
+            .path(playlist.getImagePath())
+            .toUriString();
+
+        String trackImageUrl = ServletUriComponentsBuilder
+            .fromCurrentContextPath()
+            .path("/images/tracks/") 
+            .toUriString();
+
+        return new PlaylistResponseDTO(
+                playlist.getId(),
+                playlist.getTitle(),
+                playlistImageUrl,
+                playlist.getTracks().stream()
+                .map(track -> new TrackSummaryDTO(
+                    track.getId(),
+                    track.getTitle(),
+                    new UserSummaryDTO(
+                        track.getArtist().getId(),
+                        track.getArtist().getUsername()
+                    ),
+                    track.getDurationSeconds(),
+                    String.format("%s%s", trackImageUrl, track.getImagePath())
+                )).toList(),
+                playlist.getCreatedAt(),
+                playlist.getUpdatedAt());
+    }
+
     @PostMapping
-    public ResponseEntity<PlaylistResponseDTO> createPlaylist(@AuthenticationPrincipal Jwt jwt) {
+    public ResponseEntity<PreviewPlaylistResponseDTO> createPlaylist(@AuthenticationPrincipal Jwt jwt) {
         Long userId = Long.valueOf(jwt.getSubject());
         Playlist created = playlistService.createPlaylist(userId);
-        return ResponseEntity.status(HttpStatus.CREATED).body(toResponseDTO(created));
+        return ResponseEntity.status(HttpStatus.CREATED).body(toPreviewResponseDTO(created));
     }
 
     @GetMapping
-    public ResponseEntity<List<PlaylistResponseDTO>> getAllPlaylists(
+    public ResponseEntity<List<PreviewPlaylistResponseDTO>> getAllPlaylists(
             @RequestParam(value = "title", required = false) String title) {
         List<Playlist> playlists = StringUtils.isNotBlank(title)
                 ? playlistService.searchByTitle(title)
                 : playlistService.getAllPlaylists();
-        return ResponseEntity.ok(playlists.stream().map(this::toResponseDTO).toList());
+        return ResponseEntity.ok(playlists.stream().map(this::toPreviewResponseDTO).toList());
     }
 
     @GetMapping("/{id}")
@@ -75,11 +109,11 @@ public class PlaylistController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PlaylistResponseDTO> updatePlaylist(@PathVariable Long id,
+    public ResponseEntity<PreviewPlaylistResponseDTO> updatePlaylist(@PathVariable Long id,
             @RequestBody PlaylistUpdateDTO dto) {
         try {
             return playlistService.updatePlaylist(id, dto)
-                    .map(this::toResponseDTO)
+                    .map(this::toPreviewResponseDTO)
                     .map(ResponseEntity::ok)
                     .orElse(ResponseEntity.notFound().build());
         } catch (NotFoundException e) {

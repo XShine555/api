@@ -1,15 +1,11 @@
 package com.musify.DTOs.Playlist;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
-import com.musify.DTOs.Track.TrackSummaryDTO;
-
-public record PlaylistResponseDTO(
+public record PreviewPlaylistResponseDTO(
         Long id,
         String title,
         String imageUrl,
-        List<TrackSummaryDTO> tracks,
         LocalDateTime createdAt,
         LocalDateTime updatedAt) {
 }

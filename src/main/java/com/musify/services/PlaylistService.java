@@ -51,10 +51,6 @@ public class PlaylistService {
     }
 
     public Optional<Playlist> updatePlaylist(Long id, PlaylistUpdateDTO dto) throws IOException, IllegalStateException {
-        String extension = FilenameUtils.getExtension(dto.image().getOriginalFilename());
-        Path imagePath = PLAYLIST_IMAGE_DIR.resolve(
-                String.format("%s.%s", UUID.randomUUID(), extension));
-
         Playlist playlist = playlistRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Playlist not found"));
 
@@ -62,6 +58,10 @@ public class PlaylistService {
             playlist.setTitle(dto.title());
         }
         if (dto.image() != null && !dto.image().isEmpty()) {
+            String extension = FilenameUtils.getExtension(dto.image().getOriginalFilename());
+            Path imagePath = PLAYLIST_IMAGE_DIR.resolve(
+                    String.format("%s.%s", UUID.randomUUID(), extension));
+
             dto.image().transferTo(imagePath);
             playlist.setImagePath(imagePath.toString());
         }

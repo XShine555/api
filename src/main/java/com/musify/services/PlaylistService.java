@@ -3,6 +3,7 @@ package com.musify.services;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -10,13 +11,16 @@ import java.util.UUID;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.musify.DTOs.Playlist.PlaylistUpdateDTO;
 import com.musify.exceptions.NotFoundException;
 import com.musify.models.Playlist;
+import com.musify.models.PlaylistTrack;
 import com.musify.models.User;
 import com.musify.repositories.PlaylistRepository;
+import com.musify.repositories.PlaylistTrackRepository;
 
 import io.micrometer.common.util.StringUtils;
 
@@ -27,10 +31,13 @@ public class PlaylistService {
 
     private final UserService userService;
     private final PlaylistRepository playlistRepository;
+    private final PlaylistTrackRepository playlistTrackRepository;
 
-    public PlaylistService(UserService userService, PlaylistRepository playlistRepository) {
+    public PlaylistService(UserService userService, PlaylistRepository playlistRepository,
+            PlaylistTrackRepository playlistTrackRepository) {
         this.userService = userService;
         this.playlistRepository = playlistRepository;
+        this.playlistTrackRepository = playlistTrackRepository;
     }
 
     public Playlist createPlaylist(Long id) throws NotFoundException {
@@ -52,6 +59,38 @@ public class PlaylistService {
 
     public List<Playlist> searchByTitle(String title) {
         return playlistRepository.findByTitleContainingIgnoreCase(title);
+    }
+
+    public Optional<List<PlaylistTrack>> getFilteredTracksByPlaylistId(
+            Long playlistId,
+            String sortBy,
+            String direction) {
+        if (!playlistRepository.existsById(playlistId)) {
+            return Optional.empty();
+        }
+
+        Sort sort = buildTrackSort(sortBy, direction);
+        List<PlaylistTrack> tracks = playlistTrackRepository.findFilteredByPlaylistId(
+                playlistId,
+                sort);
+        return Optional.of(tracks);
+    }
+
+    private Sort buildTrackSort(String sortBy, String direction) {
+        Sort.Direction sortDirection = "desc".equalsIgnoreCase(direction)
+                ? Sort.Direction.DESC
+                : Sort.Direction.ASC;
+
+        String property = switch (sortBy == null ? "id" : sortBy.toLowerCase()) {
+            case "duration" -> "track.durationSeconds";
+            case "addedAt" -> "addedAt";
+            case "title" -> "track.title";
+            case "artist" -> "track.artist.username";
+            case "id" -> "track.id";
+            default -> "track.id";
+        };
+
+        return Sort.by(sortDirection, property);
     }
 
     public Optional<Playlist> updatePlaylist(Long id, PlaylistUpdateDTO dto) throws IOException, IllegalStateException {

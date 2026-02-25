@@ -9,8 +9,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -35,8 +35,8 @@ public class Track {
     @JoinColumn(name = "artist_id", nullable = false)
     private User artist;
 
-    @ManyToMany(mappedBy = "tracks")
-    private Set<Playlist> playlists = new HashSet<>();
+    @OneToMany(mappedBy = "track")
+    private Set<PlaylistTrack> playlistTracks = new HashSet<>();
 
     public Long getId() {
         return id;
@@ -70,12 +70,12 @@ public class Track {
         this.artist = artist;
     }
 
-    public Set<Playlist> getPlaylists() {
-        return playlists;
+    public Set<PlaylistTrack> getPlaylistTracks() {
+        return playlistTracks;
     }
 
-    public void setPlaylists(Set<Playlist> playlists) {
-        this.playlists = playlists;
+    public void setPlaylistTracks(Set<PlaylistTrack> playlistTracks) {
+        this.playlistTracks = playlistTracks;
     }
 
     public static String getDefaultImage() {

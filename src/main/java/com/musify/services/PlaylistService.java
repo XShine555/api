@@ -72,12 +72,13 @@ public class PlaylistService {
 
             String extension = FilenameUtils.getExtension(originalName);
             Files.createDirectories(PLAYLIST_IMAGE_DIR);
-            Path imagePath = PLAYLIST_IMAGE_DIR.resolve(
-                String.format("%s.%s", UUID.randomUUID(), extension));
+
+            String imageName = String.format("%s.%s", UUID.randomUUID(), extension);
+            Path imagePath = PLAYLIST_IMAGE_DIR.resolve(imageName);
 
             logger.info("Saving playlist image to: {}", imagePath);
             dto.image().transferTo(imagePath.toFile());
-            playlist.setImagePath(imagePath.toString());
+            playlist.setImagePath(imageName);
             logger.info("Updated playlist image path: {}", playlist.getImagePath());
         }
 

@@ -23,7 +23,7 @@ import io.micrometer.common.util.StringUtils;
 @Service
 public class PlaylistService {
     private static final Logger logger = LoggerFactory.getLogger(PlaylistService.class);
-    private static final Path PLAYLIST_IMAGE_DIR = Path.of("private/images/playlists");
+    private static final Path PLAYLIST_IMAGE_DIR = Path.of("/app/private/images/playlists");
 
     private final UserService userService;
     private final PlaylistRepository playlistRepository;

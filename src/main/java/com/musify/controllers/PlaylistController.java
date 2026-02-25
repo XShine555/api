@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
 public class PlaylistController {
 
     private final PlaylistService playlistService;
-     private static final Logger logger = LoggerFactory.getLogger(PlaylistController.class);
+    private static final Logger logger = LoggerFactory.getLogger(PlaylistController.class);
 
     public PlaylistController(PlaylistService playlistService) {
         this.playlistService = playlistService;
@@ -45,10 +45,10 @@ public class PlaylistController {
 
     private PreviewPlaylistResponseDTO toPreviewResponseDTO(Playlist playlist) {
         String imageUrl = ServletUriComponentsBuilder
-            .fromCurrentContextPath()
-            .path("/images/playlists/") 
-            .path(playlist.getImagePath())
-            .toUriString();
+                .fromCurrentContextPath()
+                .path("/images/playlists/")
+                .path(playlist.getImagePath())
+                .toUriString();
 
         return new PreviewPlaylistResponseDTO(
                 playlist.getId(),
@@ -60,31 +60,30 @@ public class PlaylistController {
 
     private PlaylistResponseDTO toResponseDTO(Playlist playlist) {
         String playlistImageUrl = ServletUriComponentsBuilder
-            .fromCurrentContextPath()
-            .path("/images/playlists/") 
-            .path(playlist.getImagePath())
-            .toUriString();
+                .fromCurrentContextPath()
+                .path("/images/playlists/")
+                .path(playlist.getImagePath())
+                .toUriString();
 
         String trackImageUrl = ServletUriComponentsBuilder
-            .fromCurrentContextPath()
-            .path("/images/tracks/") 
-            .toUriString();
+                .fromCurrentContextPath()
+                .path("/images/tracks/")
+                .toUriString();
 
         return new PlaylistResponseDTO(
                 playlist.getId(),
                 playlist.getTitle(),
                 playlistImageUrl,
                 playlist.getTracks().stream()
-                .map(track -> new TrackSummaryDTO(
-                    track.getId(),
-                    track.getTitle(),
-                    new UserSummaryDTO(
-                        track.getArtist().getId(),
-                        track.getArtist().getUsername()
-                    ),
-                    track.getDurationSeconds(),
-                    String.format("%s%s", trackImageUrl, track.getImagePath())
-                )).toList(),
+                        .map(track -> new TrackSummaryDTO(
+                                track.getId(),
+                                track.getTitle(),
+                                new UserSummaryDTO(
+                                        track.getArtist().getId(),
+                                        track.getArtist().getUsername()),
+                                track.getDurationSeconds(),
+                                String.format("%s%s", trackImageUrl, track.getImagePath())))
+                        .toList(),
                 playlist.getCreatedAt(),
                 playlist.getUpdatedAt());
     }

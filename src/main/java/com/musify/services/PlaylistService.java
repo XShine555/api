@@ -1,6 +1,7 @@
 package com.musify.services;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
@@ -58,11 +59,17 @@ public class PlaylistService {
             playlist.setTitle(dto.title());
         }
         if (dto.image() != null && !dto.image().isEmpty()) {
-            String extension = FilenameUtils.getExtension(dto.image().getOriginalFilename());
-            Path imagePath = PLAYLIST_IMAGE_DIR.resolve(
-                    String.format("%s.%s", UUID.randomUUID(), extension));
+            Files.createDirectories(PLAYLIST_IMAGE_DIR);
+            String originalName = dto.image().getOriginalFilename();
+            if (originalName == null)
+                originalName = UUID.randomUUID().toString();
 
-            dto.image().transferTo(imagePath);
+            String extension = FilenameUtils.getExtension(originalName);
+            Files.createDirectories(PLAYLIST_IMAGE_DIR);
+            Path imagePath = PLAYLIST_IMAGE_DIR.resolve(
+                String.format("%s.%s", UUID.randomUUID(), extension));
+
+            dto.image().transferTo(imagePath.toFile());
             playlist.setImagePath(imagePath.toString());
         }
 

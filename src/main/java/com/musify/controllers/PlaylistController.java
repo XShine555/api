@@ -29,11 +29,15 @@ import com.musify.models.Playlist;
 import com.musify.services.PlaylistService;
 import io.micrometer.common.util.StringUtils;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @RestController
 @RequestMapping("/playlists")
 public class PlaylistController {
 
     private final PlaylistService playlistService;
+     private static final Logger logger = LoggerFactory.getLogger(PlaylistController.class);
 
     public PlaylistController(PlaylistService playlistService) {
         this.playlistService = playlistService;
@@ -120,8 +124,10 @@ public class PlaylistController {
                     .map(ResponseEntity::ok)
                     .orElse(ResponseEntity.notFound().build());
         } catch (NotFoundException e) {
+            logger.error("Playlist not found for update: {}", id, e);
             return ResponseEntity.notFound().build();
         } catch (IOException | IllegalStateException e) {
+            logger.error("Error updating playlist: {}", id, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }

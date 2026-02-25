@@ -8,6 +8,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.apache.commons.io.FilenameUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.musify.DTOs.Playlist.PlaylistUpdateDTO;
@@ -20,6 +22,7 @@ import io.micrometer.common.util.StringUtils;
 
 @Service
 public class PlaylistService {
+    private static final Logger logger = LoggerFactory.getLogger(PlaylistService.class);
     private static final Path PLAYLIST_IMAGE_DIR = Path.of("private/images/playlists");
 
     private final UserService userService;
@@ -57,22 +60,28 @@ public class PlaylistService {
 
         if (StringUtils.isNotBlank(dto.title())) {
             playlist.setTitle(dto.title());
+            logger.info("Updated playlist title: {}", dto.title());
         }
         if (dto.image() != null && !dto.image().isEmpty()) {
             Files.createDirectories(PLAYLIST_IMAGE_DIR);
             String originalName = dto.image().getOriginalFilename();
-            if (originalName == null)
+            if (originalName == null) {
                 originalName = UUID.randomUUID().toString();
+                logger.warn("Original filename is empty, generated random name: {}", originalName);
+            }
 
             String extension = FilenameUtils.getExtension(originalName);
             Files.createDirectories(PLAYLIST_IMAGE_DIR);
             Path imagePath = PLAYLIST_IMAGE_DIR.resolve(
                 String.format("%s.%s", UUID.randomUUID(), extension));
 
+            logger.info("Saving playlist image to: {}", imagePath);
             dto.image().transferTo(imagePath.toFile());
             playlist.setImagePath(imagePath.toString());
+            logger.info("Updated playlist image path: {}", playlist.getImagePath());
         }
 
+        logger.info("Saving playlist with ID {}: title='{}', imagePath='{}'", playlist.getId(), playlist.getTitle(), playlist.getImagePath());
         playlistRepository.save(playlist);
 
         return Optional.of(playlist);

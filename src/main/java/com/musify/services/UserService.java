@@ -10,9 +10,6 @@ import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,7 +22,7 @@ import com.musify.repositories.UserRepository;
 import io.micrometer.common.util.StringUtils;
 
 @Service
-public class UserService implements UserDetailsService {
+public class UserService {
 
     private static final Logger logger = LoggerFactory.getLogger(UserService.class);
     private static final String USER_IMAGE_DIR = "private/images/users/";
@@ -36,12 +33,6 @@ public class UserService implements UserDetailsService {
     public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
-    }
-
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
     }
 
     public User createUser(UserCreateDTO dto) {

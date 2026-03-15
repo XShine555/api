@@ -174,4 +174,14 @@ public class PlaylistController {
                         return ResponseEntity.notFound().build();
                 }
         }
+
+        @DeleteMapping("/{playlistId}/tracks/{trackId}")
+        public ResponseEntity<Void> removeTrackFromPlaylist(@PathVariable Long playlistId, @PathVariable Long trackId) {
+                try {
+                        playlistService.removeTrackFromPlaylist(playlistId, trackId);
+                        return ResponseEntity.noContent().build();
+                } catch (com.musify.exceptions.NotFoundException e) {
+                        return ResponseEntity.notFound().build();
+                }
+        }
 }

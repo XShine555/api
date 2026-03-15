@@ -156,6 +156,25 @@ public class PlaylistService {
         return playlistTrackRepository.save(playlistTrack);
     }
 
+    public void removeTrackFromPlaylist(Long playlistId, Long trackId) {
+        if (!playlistRepository.existsById(playlistId)) {
+            throw new NotFoundException("Playlist not found");
+        }
+        if (!trackRepository.existsById(trackId)) {
+            throw new NotFoundException("Track not found");
+        }
+
+        PlaylistTrackId ptId = new PlaylistTrackId();
+        ptId.setPlaylistId(playlistId);
+        ptId.setTrackId(trackId);
+
+        if (!playlistTrackRepository.existsById(ptId)) {
+            throw new NotFoundException("Track is not in the playlist");
+        }
+
+        playlistTrackRepository.deleteById(ptId);
+    }
+
     public boolean deletePlaylistById(Long id) {
         if (!playlistRepository.existsById(id)) {
             return false;

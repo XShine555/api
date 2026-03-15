@@ -142,6 +142,11 @@ public class PlaylistService {
         ptId.setPlaylistId(playlistId);
         ptId.setTrackId(trackId);
 
+        Optional<PlaylistTrack> existingPlaylistTrack = playlistTrackRepository.findById(ptId);
+        if (existingPlaylistTrack.isPresent()) {
+            return existingPlaylistTrack.get();
+        }
+
         PlaylistTrack playlistTrack = new PlaylistTrack();
         playlistTrack.setId(ptId);
         playlistTrack.setPlaylist(playlist);

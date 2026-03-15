@@ -2,7 +2,9 @@ package com.musify.models;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -11,8 +13,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
@@ -46,10 +46,6 @@ public class Playlist {
 
     @OneToMany(mappedBy = "playlist", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<PlaylistTrack> playlistTracks = new HashSet<>();
-
-    @ManyToMany
-    @JoinTable(name = "playlist_tracks", joinColumns = @JoinColumn(name = "playlist_id"), inverseJoinColumns = @JoinColumn(name = "track_id"))
-    private Set<Track> tracks = new HashSet<>();
 
     public User getUser() {
         return user;
@@ -113,11 +109,17 @@ public class Playlist {
         return DEFAULT_IMAGE;
     }
 
-    public Set<Track> getTracks() {
-        return tracks;
+    public Set<PlaylistTrack> getPlaylistTracks() {
+        return playlistTracks;
     }
 
-    public void setTracks(Set<Track> tracks) {
-        this.tracks = tracks;
+    public void setPlaylistTracks(Set<PlaylistTrack> playlistTracks) {
+        this.playlistTracks = playlistTracks;
+    }
+
+    public Set<Track> getTracks() {
+        return playlistTracks.stream()
+                .map(PlaylistTrack::getTrack)
+                .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 }

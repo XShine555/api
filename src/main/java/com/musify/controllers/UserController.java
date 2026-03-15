@@ -39,18 +39,10 @@ public class UserController {
                 SearchResultType.USER);
     }
 
-    @GetMapping
+    @GetMapping({"", "/"})
     public ResponseEntity<List<SearchResult>> getAllUsers() {
         return ResponseEntity.ok(userService.getAllUsers().stream()
                 .map(this::toSearchResult)
                 .toList());
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<SearchResult> getUserById(@PathVariable Long id) {
-        return userService.getUserById(id)
-                .map(this::toSearchResult)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
     }
 }

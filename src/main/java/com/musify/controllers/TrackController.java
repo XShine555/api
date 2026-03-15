@@ -37,18 +37,10 @@ public class TrackController {
                 SearchResultType.TRACK);
     }
 
-    @GetMapping
+    @GetMapping({"", "/"})
     public ResponseEntity<List<SearchResult>> getAllTracks() {
         return ResponseEntity.ok(trackService.getAllTracks().stream()
                 .map(this::toSearchResult)
                 .toList());
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<SearchResult> getTrackById(@PathVariable Long id) {
-        return trackService.getTrackById(id)
-                .map(this::toSearchResult)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
     }
 }

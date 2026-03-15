@@ -1,13 +1,10 @@
 package com.musify.controllers;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,8 +16,6 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import org.springframework.format.annotation.DateTimeFormat;
-
 import com.musify.DTOs.Playlist.PlaylistResponseDTO;
 import com.musify.DTOs.Playlist.PlaylistUpdateDTO;
 import com.musify.DTOs.Playlist.PreviewPlaylistResponseDTO;
@@ -37,7 +32,7 @@ import org.slf4j.LoggerFactory;
 @RestController
 @RequestMapping("/playlists")
 public class PlaylistController {
-
+        private static final long ADMIN_USER_ID = 1L;
         private final PlaylistService playlistService;
         private static final Logger logger = LoggerFactory.getLogger(PlaylistController.class);
 
@@ -92,9 +87,8 @@ public class PlaylistController {
         }
 
         @PostMapping
-        public ResponseEntity<PreviewPlaylistResponseDTO> createPlaylist(@AuthenticationPrincipal Jwt jwt) {
-                Long userId = Long.valueOf(jwt.getSubject());
-                Playlist created = playlistService.createPlaylist(userId);
+        public ResponseEntity<PreviewPlaylistResponseDTO> createPlaylist() {
+                Playlist created = playlistService.createPlaylist(ADMIN_USER_ID);
                 return ResponseEntity.status(HttpStatus.CREATED).body(toPreviewResponseDTO(created));
         }
 

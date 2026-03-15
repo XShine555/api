@@ -18,9 +18,12 @@ import com.musify.DTOs.Playlist.PlaylistUpdateDTO;
 import com.musify.exceptions.NotFoundException;
 import com.musify.models.Playlist;
 import com.musify.models.PlaylistTrack;
+import com.musify.models.PlaylistTrackId;
+import com.musify.models.Track;
 import com.musify.models.User;
 import com.musify.repositories.PlaylistRepository;
 import com.musify.repositories.PlaylistTrackRepository;
+import com.musify.repositories.TrackRepository;
 
 import io.micrometer.common.util.StringUtils;
 
@@ -32,12 +35,14 @@ public class PlaylistService {
     private final UserService userService;
     private final PlaylistRepository playlistRepository;
     private final PlaylistTrackRepository playlistTrackRepository;
+    private final TrackRepository trackRepository;
 
     public PlaylistService(UserService userService, PlaylistRepository playlistRepository,
-            PlaylistTrackRepository playlistTrackRepository) {
+            PlaylistTrackRepository playlistTrackRepository, TrackRepository trackRepository) {
         this.userService = userService;
         this.playlistRepository = playlistRepository;
         this.playlistTrackRepository = playlistTrackRepository;
+        this.trackRepository = trackRepository;
     }
 
     public Playlist createPlaylist(Long id) throws NotFoundException {
@@ -125,6 +130,25 @@ public class PlaylistService {
         playlistRepository.save(playlist);
 
         return Optional.of(playlist);
+    }
+
+    public PlaylistTrack addTrackToPlaylist(Long playlistId, Long trackId) {
+        Playlist playlist = playlistRepository.findById(playlistId)
+                .orElseThrow(() -> new NotFoundException("Playlist not found"));
+        Track track = trackRepository.findById(trackId)
+                .orElseThrow(() -> new NotFoundException("Track not found"));
+
+        PlaylistTrackId ptId = new PlaylistTrackId();
+        ptId.setPlaylistId(playlistId);
+        ptId.setTrackId(trackId);
+
+        PlaylistTrack playlistTrack = new PlaylistTrack();
+        playlistTrack.setId(ptId);
+        playlistTrack.setPlaylist(playlist);
+        playlistTrack.setTrack(track);
+        playlistTrack.setAddedAt(LocalDateTime.now());
+
+        return playlistTrackRepository.save(playlistTrack);
     }
 
     public boolean deletePlaylistById(Long id) {

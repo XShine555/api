@@ -170,4 +170,14 @@ public class PlaylistController {
                                 ? ResponseEntity.noContent().build()
                                 : ResponseEntity.notFound().build();
         }
+
+        @PostMapping("/{id}/tracks")
+        public ResponseEntity<Void> addTrackToPlaylist(@PathVariable Long id, @RequestParam Long trackId) {
+                try {
+                        playlistService.addTrackToPlaylist(id, trackId);
+                        return ResponseEntity.noContent().build();
+                } catch (com.musify.exceptions.NotFoundException e) {
+                        return ResponseEntity.notFound().build();
+                }
+        }
 }
